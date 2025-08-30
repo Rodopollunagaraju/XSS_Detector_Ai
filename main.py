@@ -8,9 +8,8 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# ------------------------------
 # Load & preprocess dataset
-# ------------------------------
+
 df = pd.read_csv("XSS_dataset.csv")
 
 if "Unnamed: 0" in df.columns:
@@ -24,9 +23,8 @@ def clean_text(text):
 
 df["input"] = df["input"].apply(clean_text)
 
-# ------------------------------
 # Train ML model
-# ------------------------------
+
 X_train, X_test, y_train, y_test = train_test_split(
     df["input"], df["label"], test_size=0.2, random_state=42
 )
@@ -38,17 +36,15 @@ X_test_tfidf = vectorizer.transform(X_test)
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train_tfidf, y_train)
 
-# ------------------------------
 # Streamlit UI
-# ------------------------------
+
 st.set_page_config(page_title="AI XSS Detector", page_icon="🤖", layout="centered")
 
 st.title("🤖 AI-Powered XSS Detector")
 st.write("Enter any text or HTML input. The ML model will predict if it's malicious (XSS) or safe.")
 
-# ------------------------------
 # User Input Prediction
-# ------------------------------
+
 user_input = st.text_area("🔎 Enter text to check:", height=150)
 
 if st.button("Check for XSS"):
@@ -67,9 +63,8 @@ if st.button("Check for XSS"):
         else:
             st.success("✅ Input seems Safe.")
 
-# ------------------------------
 # Model Performance Section
-# ------------------------------
+
 st.subheader("📊 Model Performance on Test Set")
 
 y_pred = model.predict(X_test_tfidf)
