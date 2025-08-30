@@ -4,6 +4,9 @@ import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # ------------------------------
 # Load & preprocess dataset
@@ -43,6 +46,9 @@ st.set_page_config(page_title="AI XSS Detector", page_icon="🤖", layout="cente
 st.title("🤖 AI-Powered XSS Detector")
 st.write("Enter any text or HTML input. The ML model will predict if it's malicious (XSS) or safe.")
 
+# ------------------------------
+# User Input Prediction
+# ------------------------------
 user_input = st.text_area("🔎 Enter text to check:", height=150)
 
 if st.button("Check for XSS"):
@@ -60,3 +66,30 @@ if st.button("Check for XSS"):
             st.error("🚨 Potential XSS Attack Detected!")
         else:
             st.success("✅ Input seems Safe.")
+
+# ------------------------------
+# Model Performance Section
+# ------------------------------
+st.subheader("📊 Model Performance on Test Set")
+
+y_pred = model.predict(X_test_tfidf)
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+
+perf_df = pd.DataFrame({
+    "Metric": ["Accuracy", "Precision", "Recall", "F1-Score"],
+    "Score": [accuracy, precision, recall, f1]
+})
+
+st.bar_chart(perf_df.set_index("Metric"))
+
+# Confusion Matrix
+st.write("### Confusion Matrix")
+cm = confusion_matrix(y_test, y_pred)
+fig, ax = plt.subplots()
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+ax.set_xlabel("Predicted")
+ax.set_ylabel("Actual")
+st.pyplot(fig)
